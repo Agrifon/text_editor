@@ -13,10 +13,10 @@ set(CMAKE_AUTOUIC ON)
 
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 add_subdirectory(core)
-add_subdirectory(gui)
+#add_subdirectory(gui)
 
 add_executable(${PROJECT_NAME} app/src/main.cpp)
-target_link_libraries(${PROJECT_NAME} PRIVATE gui)
+target_link_libraries(${PROJECT_NAME} PRIVATE core)
 
 message(STATUS "Project configured successfully!")
 
