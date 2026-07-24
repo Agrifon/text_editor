@@ -31,11 +31,12 @@ bool core::Document::load(const std::string& filename)
     return true;
 }
 
-bool core::Document::save(const std::string& filename) const
+bool core::Document::save(const std::string& filename)
 {
     std::ofstream file(filename);
     if(!file.is_open()) return false;
     file << m_text;
+    m_isModified = false;
     return true;
 }
 

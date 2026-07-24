@@ -19,7 +19,7 @@ namespace core
             void setText(const std::string& newText);
 
             bool load(const std::string& filename);
-            bool save(const std::string& filename) const;
+            bool save(const std::string& filename);
             bool saveAs(const std::string& filename);
 
             std::string fileName() const;

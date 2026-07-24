@@ -78,7 +78,6 @@ void gui::MainWindow::saveDocument()
 
     if(m_document->save(currentName))
     {
-        m_document->setModified(false);
         updateWindowTitle();
     }
     else
