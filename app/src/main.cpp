@@ -1,34 +1,23 @@
+#include <QApplication>
 #include <core/document.h>
-#include <iostream>
+#include <gui/mainwindow.h>
 
-int main()
+int main(int argc, char* argv[])
 {
+    QApplication app(argc, argv);
+    app.setApplicationName("Text Editor");
+    app.setOrganizationName("Vladislav Zheleznyak");
+
     core::Document doc;
-    doc.setText("test string");
-    std::cout << "Text: " << doc.text() << std::endl;
-    
-    std::string filename = "test.txt";
-    if(doc.save(filename))
+
+    if(argc > 1 && !doc.load(argv[1]))
     {
-        std::cout << "File saved successfully: " << filename << std::endl;
-    }
-    else
-    {
-        std::cerr << "Failed to save file!" << std::endl;
-        return 1;
+        qWarning() << "Could not load file" << argv[1];
     }
 
-    core::Document loadedDoc;
-    if(loadedDoc.load(filename))
-    {
-        std::cout << "File loaded successfully. Content: " << loadedDoc.text() << std::endl;
-    }
-    else
-    {
-        std::cerr << "Failed to load file!" << std::endl;
-        return 1;
-    }
+    gui::MainWindow window(&doc);
+    window.show();
 
-    return 0;
+    return app.exec();
 }
 
