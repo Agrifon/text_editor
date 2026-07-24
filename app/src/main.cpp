@@ -10,9 +10,9 @@ int main(int argc, char* argv[])
 
     core::Document doc;
 
-    if(argc > 1)
+    if(argc > 1 && !doc.load(argv[1]))
     {
-        doc.load(argv[1]);
+        qWarning() << "Could not load file" << argv[1];
     }
 
     gui::MainWindow window(&doc);
