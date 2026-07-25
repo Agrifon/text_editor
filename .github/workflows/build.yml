@@ -23,6 +23,10 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y qt6-base-dev qt6-tools-dev
+      
+      - name: Remove untrusted Homebrew tap
+        if: runner.os == 'macOS'
+        run: brew untap aws/tap || true
 
       - name: Install Qt (macOS)
         if: runner.os == 'macOS'
