@@ -1,0 +1,68 @@
+name: CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build-and-test:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        build_type: [Release, Debug]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Qt (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y qt6-base-dev qt6-tools-dev
+
+      - name: Install Qt (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          brew install qt6
+          echo "CMAKE_PREFIX_PATH=$(brew --prefix qt6)" >> $GITHUB_ENV
+
+      - name: Install Qt (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          choco install qt6
+
+      - name: Configure CMake
+        run: |
+          cmake -B build -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+
+      - name: Build
+        run: cmake --build build --config ${{ matrix.build_type }}
+
+      - name: Run tests
+        working-directory: build
+        run: ctest -C ${{ matrix.build_type }} --output-on-failure
+
+      - name: Upload artifacts (Linux)
+        if: runner.os == 'Linux' && matrix.build_type == 'Release'
+        uses: actions/upload-artifact@v4
+        with:
+          name: TextEditor-Linux
+          path: build/bin/linux/TextEditor
+
+      - name: Upload artifacts (macOS)
+        if: runner.os == 'macOS' && matrix.build_type == 'Release'
+        uses: actions/upload-artifact@v4
+        with:
+          name: TextEditor-macOS
+          path: build/bin/macos/TextEditor.app
+
+      - name: Upload artifacts (Windows)
+        if: runner.os == 'Windows' && matrix.build_type == 'Release'
+        uses: actions/upload-artifact@v4
+        with:
+          name: TextEditor-Windows
+          path: build/bin/windows/Release/TextEditor.exe
