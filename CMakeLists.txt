@@ -58,5 +58,12 @@ if(WIN32)
     )
 endif()
 
+if(APPLE)
+    set(CMAKE_MACOSX_BUNDLE ON)
+    set_target_properties(${PROJECT_NAME} PROPERTIES
+        MACOSX_BUNDLE_INFO_PLIST ${CMAKE_SOURCE_DIR}/macos/Info.plist
+    )
+endif()
+
 message(STATUS "Project configured successfully!")
 
