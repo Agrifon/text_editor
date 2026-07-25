@@ -32,10 +32,12 @@ jobs:
 
       - name: Install Qt (Windows)
         if: runner.os == 'Windows'
-        run: |
-          pip install aqtinstall
-          aqt install-qt windows desktop 6.8.0 win64_msvc2019_64
-          echo "Qt6_DIR=C:/Qt/6.7.2/msvc2019_64" >> $GITHUB_ENV
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: '6.8.0'
+          host: 'windows'
+          target: 'desktop'
+          arch: 'win64_msvc2022_64'
 
       - name: Configure CMake
         run: |
