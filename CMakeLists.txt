@@ -15,6 +15,12 @@ set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 add_subdirectory(core)
 add_subdirectory(gui)
 
+option(BUILD_TESTS "Build tests" ON)
+if(BUILD_TESTS)
+    enable_testing()
+    add_subdirectory(tests)
+endif()
+
 add_executable(${PROJECT_NAME} app/src/main.cpp)
 target_link_libraries(${PROJECT_NAME} PRIVATE gui)
 
