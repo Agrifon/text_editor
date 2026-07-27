@@ -23,6 +23,7 @@ namespace gui
             void createMenuBar();
             void updateEditor(); 
             void updateWindowTitle(); 
+            void updateStatusBar();
             bool maybeSave();            
 
             core::Document* m_document;

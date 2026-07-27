@@ -7,6 +7,9 @@
 #include <QMessageBox>
 #include <QTextEdit>
 #include <QCloseEvent>
+#include <QStatusBar>
+#include <QRegularExpression>
+#include <QFileInfo>
 
 #include <core/document.h>
 
@@ -17,6 +20,7 @@ gui::MainWindow::MainWindow(core::Document* document, QWidget* parent)
     createMenuBar();
     updateEditor();
     updateWindowTitle();
+    updateStatusBar();
     resize(800,600);
 
     connect(m_textEdit, &QTextEdit::textChanged, this, &MainWindow::onTextChanged);
@@ -28,12 +32,22 @@ void gui::MainWindow::createMenuBar()
 {
     auto* fileMenu = menuBar()->addMenu(tr("&File"));
 
-    fileMenu->addAction(tr("&New"), QKeySequence::New, this, &MainWindow::newDocument);
-    fileMenu->addAction(tr("&Open..."), QKeySequence::Open, this, &MainWindow::openDocument);
-    fileMenu->addAction(tr("&Save"), QKeySequence::Save, this, &MainWindow::saveDocument);
-    fileMenu->addAction(tr("Save &As..."), QKeySequence::SaveAs, this, &MainWindow::saveDocumentAs);
+    fileMenu->addAction(tr("&New"), QKeySequence::New, this, &MainWindow::newDocument)
+        ->setStatusTip(tr("Create a new document"));
+
+    fileMenu->addAction(tr("&Open..."), QKeySequence::Open, this, &MainWindow::openDocument)
+        ->setStatusTip(tr("Open an existing document"));
+
+    fileMenu->addAction(tr("&Save"), QKeySequence::Save, this, &MainWindow::saveDocument)
+        ->setStatusTip(tr("Save the current document"));
+
+    fileMenu->addAction(tr("Save &As..."), QKeySequence::SaveAs, this, &MainWindow::saveDocumentAs)
+        ->setStatusTip(tr("Save the current document with a new name"));
+
     fileMenu->addSeparator();
-    fileMenu->addAction(tr("E&xit"), QKeySequence::Quit, this, &MainWindow::exitApp);
+
+    fileMenu->addAction(tr("E&xit"), QKeySequence::Quit, this, &MainWindow::exitApp)
+        ->setStatusTip(tr("Exit the application"));
 }
 
 void gui::MainWindow::newDocument()
@@ -45,6 +59,7 @@ void gui::MainWindow::newDocument()
         m_document->setModified(false);
         updateEditor();
         updateWindowTitle();
+        updateStatusBar();
     }
 }
 
@@ -59,6 +74,7 @@ void gui::MainWindow::openDocument()
     {
         updateEditor();
         updateWindowTitle();
+        updateStatusBar();
     }
     else
     {
@@ -79,6 +95,7 @@ void gui::MainWindow::saveDocument()
     if(m_document->save(currentName))
     {
         updateWindowTitle();
+        updateStatusBar();
     }
     else
     {
@@ -94,6 +111,7 @@ void gui::MainWindow::saveDocumentAs()
     if(m_document->saveAs(fileName.toStdString()))
     {
         updateWindowTitle();
+        updateStatusBar();
     }
     else
     {
@@ -114,6 +132,7 @@ void gui::MainWindow::onTextChanged()
         m_document->setText(currentText.toStdString());
         m_document->setModified(true);
         updateWindowTitle();
+        updateStatusBar();
     }
 }
 
@@ -173,6 +192,35 @@ void gui::MainWindow::updateWindowTitle()
         title += " *";
     }
     setWindowTitle(title);
+}
+
+void gui::MainWindow::updateStatusBar()
+{
+    const QString text = m_textEdit->toPlainText();
+    const int lines = text.count("\n") + 1;
+    const int words = text.split(QRegularExpression("\\s+"), Qt::SkipEmptyParts).size();
+    const int chars = text.size();
+
+    QString fileName = QString::fromStdString(m_document->fileName());
+    if(fileName.isEmpty())
+    {
+        fileName = tr("New");
+    }
+    else
+    {
+        fileName = QFileInfo(fileName).fileName();
+    }
+
+    const QString modified = m_document->isModified() ? " *" : "";
+
+    statusBar()->showMessage(
+        tr("%1%2 | Lines: %3 | Words: %4 | Characters: %5")
+        .arg(fileName)
+        .arg(modified)
+        .arg(lines)
+        .arg(words)
+        .arg(chars)
+    );
 }
 
 
