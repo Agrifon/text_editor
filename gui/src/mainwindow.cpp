@@ -21,6 +21,7 @@ gui::MainWindow::MainWindow(core::Document* document, QWidget* parent)
     updateEditor();
     updateWindowTitle();
     updateStatusBar();
+    m_highlighter = new gui::SyntaxHighlighter(m_textEdit->document());
     resize(800,600);
 
     connect(m_textEdit, &QTextEdit::textChanged, this, &MainWindow::onTextChanged);

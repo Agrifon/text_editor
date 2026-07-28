@@ -1,5 +1,7 @@
 #pragma once
 
+#include <gui/syntaxhighlighter.h>
+
 #include <QMainWindow>
 
 namespace core {class Document;}
@@ -28,6 +30,7 @@ namespace gui
 
             core::Document* m_document;
             QTextEdit* m_textEdit;
+            gui::SyntaxHighlighter* m_highlighter = nullptr;
 
         protected:
             void closeEvent(QCloseEvent* event) override;
